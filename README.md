@@ -6,6 +6,8 @@
 
 **Backend:** FastAPI, SQLAlchemy 2.0, PostgreSQL 16, JWT (PyJWT), Argon2 (pwdlib), pytest, ruff.
 
+**Frontend:** React, TypeScript, Vite, React Router, Tailwind CSS. [Запуск и документация фронтенда](frontend/README.md).
+
 > Все команды в этом README — для **bash на Windows (Git Bash)**: он устанавливается вместе с
 > [Git for Windows](https://git-scm.com/download/win). Откройте проект и запускайте команды
 > в окне *Git Bash* (правый клик в папке → *Open Git Bash here*). Также нужны
@@ -16,7 +18,7 @@
 
 ```
 backend/    FastAPI + PostgreSQL — API и база данных
-frontend/   клиентская часть (пока пусто)
+frontend/   React + TypeScript — вход, главная и маршруты остальных экранов
 .github/    CI (GitHub Actions)
 ```
 
