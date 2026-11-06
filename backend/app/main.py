@@ -7,17 +7,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.router import api_router
 from app.core.config import get_settings
 from app.db.base import Base
-from app.db.session import engine
+from app.db.seed import seed_reference_data
+from app.db.session import SessionLocal, engine
 
 settings = get_settings()
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    # При старте создаём недостающие таблицы (модели уже импортированы через роутеры).
-    # Уже существующие таблицы НЕ меняются: после правки моделей пересоздайте базу
-    # (см. README, раздел «Изменили модели»).
+    # При старте создаём недостающие таблицы (модели уже импортированы через роутеры)
+    # и догружаем справочные данные. Уже существующие таблицы НЕ меняются: после правки
+    # моделей пересоздайте базу (см. README, раздел «Изменили модели»).
     Base.metadata.create_all(bind=engine)
+    with SessionLocal() as db:
+        seed_reference_data(db)
     yield
 
 

@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     secret_key: str = Field(min_length=32)
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
+    # Ставка нормо-часа, ₽ (заглушка до получения реальных данных).
+    labor_rate_per_hour: int = Field(default=2000, gt=0)
     # JSON-список в переменной окружения, например: ["http://localhost:3000"]
     cors_origins: list[str] = []
 
