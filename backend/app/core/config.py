@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 60
     # Ставка нормо-часа, ₽ (заглушка до получения реальных данных).
     labor_rate_per_hour: int = Field(default=2000, gt=0)
+    # Расходы на владение авто в год — доля цены авто (заглушка: 0.08 = 8%).
+    annual_running_costs_rate: float = Field(default=0.08, gt=0, le=1)
     # JSON-список в переменной окружения, например: ["http://localhost:3000"]
     cors_origins: list[str] = []
 

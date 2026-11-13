@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
 
-from app.api.deps import CurrentUser, DbSession
+from app.api.deps import CurrentUser, DbSession, get_user_car
 from app.models import Car, Region
 from app.schemas.car import CarCreate, CarRead
 
@@ -31,9 +31,6 @@ def create_car(payload: CarCreate, current_user: CurrentUser, db: DbSession) -> 
 
 @router.delete("/{car_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_car(car_id: int, current_user: CurrentUser, db: DbSession) -> None:
-    # Чужое авто неотличимо от несуществующего: всегда 404.
-    car = db.scalar(select(Car).where(Car.id == car_id, Car.user_id == current_user.id))
-    if car is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Car not found")
+    car = get_user_car(db, current_user, car_id)
     db.delete(car)
     db.commit()
