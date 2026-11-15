@@ -1,0 +1,20 @@
+{
+  "Lada (ВАЗ)": ["Granta", "Vesta", "Niva Legend", "Niva Travel", "Largus"],
+  "Hyundai": ["Solaris", "Creta", "Tucson", "Elantra", "Santa Fe"],
+  "Kia": ["Rio", "Sportage", "Ceed", "Seltos", "Optima"],
+  "Toyota": ["Camry", "Corolla", "RAV4", "Land Cruiser Prado", "Highlander"],
+  "Volkswagen": ["Polo", "Tiguan", "Passat", "Golf", "Jetta"],
+  "Skoda": ["Octavia", "Rapid", "Kodiaq", "Superb", "Fabia"],
+  "Renault": ["Logan", "Duster", "Sandero", "Kaptur", "Arkana"],
+  "Nissan": ["Qashqai", "X-Trail", "Almera", "Juke", "Teana"],
+  "Mazda": ["3", "6", "CX-5", "CX-7"],
+  "Ford": ["Focus", "Fiesta", "Kuga", "Mondeo"],
+  "Chevrolet": ["Niva", "Cruze", "Aveo", "Lacetti"],
+  "BMW": ["3 Series", "5 Series", "X3", "X5"],
+  "Mercedes-Benz": ["C-Class", "E-Class", "GLC", "GLE"],
+  "Audi": ["A4", "A6", "Q5", "Q7"],
+  "Mitsubishi": ["Lancer", "Outlander", "ASX", "Pajero"],
+  "Geely": ["Coolray", "Atlas", "Monjaro", "Emgrand"],
+  "Chery": ["Tiggo 4", "Tiggo 7 Pro", "Tiggo 8 Pro", "Arrizo 8"],
+  "UAZ": ["Patriot", "Hunter", "Pickup"]
+}

@@ -11,20 +11,24 @@ from sqlalchemy.orm import sessionmaker  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
 from app.db.base import Base  # noqa: E402
+from app.db.seed import seed_reference_data  # noqa: E402
 from app.db.session import get_db  # noqa: E402
 from app.main import app  # noqa: E402
 
 
 @pytest.fixture()
 def session_factory():
-    """Чистая in-memory SQLite на каждый тест."""
+    """Чистая in-memory SQLite на каждый тест, со справочными данными."""
     engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
     Base.metadata.create_all(engine)
-    yield sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
+    factory = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
+    with factory() as db:
+        seed_reference_data(db)
+    yield factory
     Base.metadata.drop_all(engine)
     engine.dispose()
 
@@ -41,6 +45,14 @@ def client(session_factory):
     app.dependency_overrides.clear()
 
 
+def _register_and_login(client, email: str) -> dict[str, str]:
+    credentials = {"email": email, "password": "correct-horse-battery"}
+    assert client.post("/api/auth/register", json=credentials).status_code == 201
+    response = client.post("/api/auth/login", json=credentials)
+    assert response.status_code == 200
+    return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+
 @pytest.fixture()
 def registered_user(client):
     payload = {"email": "driver@example.com", "password": "correct-horse-battery"}
@@ -54,3 +66,9 @@ def auth_headers(client, registered_user):
     response = client.post("/api/auth/login", json=registered_user)
     assert response.status_code == 200
     return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+
+@pytest.fixture()
+def other_auth_headers(client):
+    """Второй пользователь — для проверок «чужие данные недоступны»."""
+    return _register_and_login(client, "other@example.com")
