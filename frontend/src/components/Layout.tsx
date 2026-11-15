@@ -1,12 +1,13 @@
 import { useRef, useState } from 'react'
 import { ChevronDown, LogIn, X } from 'lucide-react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { sections } from '../routes'
 import { BackButton } from './BackButton'
 import { Brand } from './Brand'
 
 export function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { pathname } = useLocation()
   const aboutDialog = useRef<HTMLDialogElement>(null)
 
   return (
@@ -16,13 +17,13 @@ export function Layout() {
         <div className="app-shell app-topbar">
           <Brand />
           <nav aria-label="Основная навигация" className="app-navigation">
-            <NavLink to="/home" className={({ isActive }) => isActive ? 'app-tab app-tab-active' : 'app-tab'}>Главная</NavLink>
+            <NavLink to="/home" className={({ isActive }) => isActive || pathname === '/car' ? 'app-tab app-tab-active' : 'app-tab'}>Главная</NavLink>
             <NavLink to="/history" className={({ isActive }) => isActive ? 'app-tab app-tab-active' : 'app-tab'}>История расчётов</NavLink>
             <button type="button" onClick={() => aboutDialog.current?.showModal()} className="app-tab">О сервисе</button>
           </nav>
 
           <div className="app-header-actions">
-            <BackButton />
+            {pathname !== '/car' && <BackButton />}
             <div className="relative" onKeyDown={(event) => { if (event.key === 'Escape') setMenuOpen(false) }}>
               <button
                 type="button"
