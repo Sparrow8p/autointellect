@@ -9,7 +9,7 @@ export const sections = [
   { path: '/history', title: 'История расчётов', name: 'History', icon: History },
 ] as const
 
-export const placeholderSections = sections.filter((section) => section.path !== '/home' && section.path !== '/car')
+export const placeholderSections = sections.filter((section) => !['/home', '/car', '/repair'].includes(section.path))
 
 export const backFallbacks: Record<string, string | undefined> = {
   '/home': '/',
