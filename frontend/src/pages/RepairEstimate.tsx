@@ -1,16 +1,9 @@
-import { useState } from 'react'
 import { Bookmark, CarFront, ChevronDown, Info } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import type { CarProfileDraft } from '../types/carProfile'
+import type { ApiCar, EstimateResult } from '../lib/api'
 
-const exampleCar = { brand: 'Hyundai', model: 'Solaris', year: '2018', mileage: '85000', region: 'Москва' }
-
-export function RepairEstimate({ car, problem }: { car: CarProfileDraft; problem: string }) {
-  const [notice, setNotice] = useState('')
-  const hasCar = Boolean(car.brand && car.model && car.year && car.region && /^\d+$/.test(car.mileage.replace(/\s/g, '')))
-  const selectedCar = hasCar ? car : exampleCar
-  const selectedProblem = problem.trim() || (hasCar ? 'Проблема не указана' : 'Стук в подвеске')
-  const mileage = new Intl.NumberFormat('ru-RU').format(Number(selectedCar.mileage.replace(/\s/g, '')))
+export function RepairEstimate({ car: selectedCar, problem: selectedProblem, estimate }: { car: ApiCar; problem: string; estimate: EstimateResult }) {
+  const mileage = selectedCar.mileage.toLocaleString('ru-RU')
 
   return (
     <>
@@ -26,15 +19,15 @@ export function RepairEstimate({ car, problem }: { car: CarProfileDraft; problem
         <section className="repair-estimate" aria-label="Оценка ремонта">
           <div className="repair-range">
             <p className="text-[13px] leading-4 font-medium text-muted">ОРИЕНТИРОВОЧНАЯ СТОИМОСТЬ</p>
-            <p className="repair-price">Обычно от 18&nbsp;000 до&nbsp;24&nbsp;000&nbsp;₽</p>
+            <p className="repair-price">Обычно от {estimate.min_price.toLocaleString('ru-RU')} до {estimate.max_price.toLocaleString('ru-RU')} ₽</p>
             <p className="repair-context">Для вашего {selectedCar.brand} {selectedCar.model} {selectedCar.year} {selectedCar.region === 'Москва' ? 'в Москве' : `· ${selectedCar.region}`}</p>
           </div>
 
           <div className="repair-confidence">
             <Info size={22} strokeWidth={1} aria-hidden="true" />
             <div>
-              <h2 className="text-sm leading-[17px] font-semibold text-forest">Уверенность: Средняя</h2>
-              <p className="mt-1 text-[13px] leading-4 text-muted">Потому что расчёт сделан без точного осмотра автомобиля</p>
+              <h2 className="text-sm leading-[17px] font-semibold text-forest">Уверенность: {estimate.recognized ? 'Средняя' : 'Низкая'}</h2>
+              <p className="mt-1 text-[13px] leading-4 text-muted">{estimate.recognized ? 'Расчёт сделан по описанию, без осмотра автомобиля.' : 'Проблему не удалось распознать. В сумму включена только диагностика.'}</p>
             </div>
           </div>
 
@@ -69,12 +62,11 @@ export function RepairEstimate({ car, problem }: { car: CarProfileDraft; problem
           </div>
           <div className="grid gap-3">
             <Link to="/valuation" className="repair-action repair-action-primary">Оценить стоимость авто</Link>
-            <button type="button" onClick={() => setNotice('Сохранение расчётов пока недоступно.')} className="repair-action repair-action-secondary"><Bookmark size={20} strokeWidth={1} aria-hidden="true" />Сохранить расчёт</button>
+            <Link to="/valuation" className="repair-action repair-action-secondary"><Bookmark size={20} strokeWidth={1} aria-hidden="true" />Сохранить расчёт</Link>
           </div>
-          <p role="status" className="text-xs leading-[1.45] text-muted">{notice || 'Сравните стоимость ремонта и продажи, прежде чем принимать решение.'}</p>
+          <p className="text-xs leading-[1.45] text-muted">Сравните стоимость ремонта и продажи, прежде чем принимать решение.</p>
         </aside>
       </div>
-      <p className="mt-6 text-xs leading-5 text-muted">Пример из макета. Стоимость показана для демонстрации интерфейса.</p>
     </>
   )
 }

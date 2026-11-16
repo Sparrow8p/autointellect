@@ -6,7 +6,6 @@ export function BackButton({ inverse = false }: { inverse?: boolean }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const fallback = backFallbacks[pathname]
-  // React Router tracks its own history index. A direct URL must not send the user off-site.
   const hasPreviousEntry = typeof window.history.state?.idx === 'number' && window.history.state.idx > 0
   const canGoBack = hasPreviousEntry || Boolean(fallback)
 

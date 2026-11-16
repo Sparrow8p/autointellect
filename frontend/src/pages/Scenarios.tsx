@@ -1,35 +1,51 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Banknote, Bookmark, CarFront, Check, TrendingUp } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import type { CarProfileDraft } from '../types/carProfile'
+import { Link, useNavigate } from 'react-router-dom'
+import { api, errorMessage } from '../lib/api'
+import type { ApiCar, HistoryItem, ScenariosResult } from '../lib/api'
 
-const repairCost = 21000
-const priceAfterRepair = 680000
-const repairAndSale = priceAfterRepair - repairCost
 const formatMoney = (value: number) => value.toLocaleString('ru-RU')
-const exampleCar = { brand: 'Hyundai', model: 'Solaris', year: '2018' }
 
-export function Scenarios({ car, priceAsIs, onStartNew }: {
-  car: CarProfileDraft
-  priceAsIs: string
+export function Scenarios({ car, problem, result, onStartNew }: {
+  car: ApiCar
+  problem: string
+  result: ScenariosResult
   onStartNew: () => void
 }) {
+  const navigate = useNavigate()
   const [expanded, setExpanded] = useState(true)
-  const [notice, setNotice] = useState('')
-  const hasCar = Boolean(car.brand && car.model && car.year && car.region && /^\d+$/.test(car.mileage.replace(/\s/g, '')))
-  const selectedCar = hasCar ? car : exampleCar
-  const digits = priceAsIs.replace(/\s/g, '')
-  const priceNow = /^\d+$/.test(digits) && Number.isSafeInteger(Number(digits)) ? Number(digits) : null
-  const benefit = priceNow === null ? null : repairAndSale - priceNow
-  const recommended = benefit === null || benefit === 0 ? null : benefit > 0 ? 'repair-sale' : 'sell'
-  const conclusion = benefit === null ? 'Укажите цену для сравнения'
-    : benefit > 0 ? `Ремонт окупится. Выгода ~${formatMoney(benefit)} ₽`
-      : benefit < 0 ? 'Выгоднее продать как есть' : 'Варианты равноценны по сумме'
+  const [error, setError] = useState('')
+  const [pending, setPending] = useState(false)
+  const request = useRef<AbortController | null>(null)
+  const repairCost = result.repair.repair_cost
+  const priceNow = result.scenarios.sell_as_is.value
+  const priceAfterRepair = result.scenarios.repair_and_sell.price_after_repair
+  const repairAndSale = result.scenarios.repair_and_sell.value
+  const recommended = result.scenarios.repair_and_sell.recommended ? 'repair-sale' : result.scenarios.sell_as_is.recommended ? 'sell' : null
+
+  useEffect(() => () => request.current?.abort(), [])
+
+  async function saveCalculation() {
+    if (request.current) return
+    const controller = new AbortController()
+    request.current = controller
+    setPending(true)
+    setError('')
+    try {
+      await api<HistoryItem>('/history/save', { method: 'POST', body: { car_id: car.id, problem_text: problem.trim(), car_price: priceNow }, signal: controller.signal })
+      if (!controller.signal.aborted) void navigate('/history')
+    } catch (reason) {
+      if (!controller.signal.aborted) setError(errorMessage(reason))
+    } finally {
+      if (request.current === controller) request.current = null
+      if (!controller.signal.aborted) setPending(false)
+    }
+  }
 
   const scenarios = [
     { id: 'sell', icon: Banknote, title: 'Продать как есть', amount: priceNow, text: 'Получите деньги сразу, но без вложений в машину' },
     { id: 'repair-sale', icon: TrendingUp, title: 'Ремонт → Продажа', amount: repairAndSale, text: recommended === 'repair-sale' ? 'Максимальная выгода. Вкладываете в ремонт, продаёте дороже' : 'Вкладываете в ремонт, затем продаёте автомобиль' },
-    { id: 'keep', icon: CarFront, title: 'Ремонт → Эксплуатация', amount: -repairCost, text: 'Остаётесь на машине. Тратите на ремонт, но не продаёте' },
+    { id: 'keep', icon: CarFront, title: 'Ремонт → Эксплуатация', amount: result.scenarios.repair_and_keep.value, text: `Ремонт и расходы на владение за ${result.scenarios.repair_and_keep.years} год. Автомобиль остаётся у вас` },
   ]
 
   return (
@@ -46,7 +62,7 @@ export function Scenarios({ car, priceAsIs, onStartNew }: {
       <div className="scenarios-content">
         <div className="scenarios-context">
           <CarFront size={20} strokeWidth={1} aria-hidden="true" />
-          <p>{selectedCar.brand} {selectedCar.model}, {selectedCar.year} • Стоимость ремонта: ~{formatMoney(repairCost)} ₽ • Цена авто сейчас: {priceNow === null ? <Link to="/valuation" className="text-forest underline">Указать цену</Link> : `${formatMoney(priceNow)} ₽`}</p>
+          <p>{car.brand} {car.model}, {car.year} • Стоимость ремонта: ~{formatMoney(repairCost)} ₽ • Цена авто сейчас: {formatMoney(priceNow)} ₽</p>
           <span className="text-xs leading-[15px] text-muted">Все суммы ориентировочные</span>
         </div>
 
@@ -58,7 +74,7 @@ export function Scenarios({ car, priceAsIs, onStartNew }: {
                 {recommended === id && <span className="scenario-badge"><Check size={14} strokeWidth={1} aria-hidden="true" />Рекомендуем</span>}
               </div>
               <h2 id={`${id}-title`}>{title}</h2>
-              <p className="scenario-amount">{amount === null ? '—' : `${amount < 0 ? '−' : '+'} ${formatMoney(Math.abs(amount))} ₽`}</p>
+              <p className="scenario-amount">{amount < 0 ? '−' : '+'} {formatMoney(Math.abs(amount))} ₽</p>
               <p className="scenario-description">{text}</p>
             </article>
           ))}
@@ -66,27 +82,26 @@ export function Scenarios({ car, priceAsIs, onStartNew }: {
 
         <section className="scenario-reason" aria-label="Обоснование рекомендации">
           <div className="scenario-conclusion">
-            <h2>{conclusion}</h2>
+            <h2>{result.recommendation}</h2>
             <div id="scenario-math" className={expanded ? 'scenario-math' : 'hidden'}>
               <p>{formatMoney(priceAfterRepair)} − {formatMoney(repairCost)} = {formatMoney(repairAndSale)} ₽</p>
-              <p>{priceNow === null ? 'Укажите цену на предыдущем шаге.' : `${formatMoney(Math.max(repairAndSale, priceNow))} − ${formatMoney(Math.min(repairAndSale, priceNow))} = ${formatMoney(Math.abs(repairAndSale - priceNow))} ₽`}</p>
+              <p>{formatMoney(repairAndSale)} − {formatMoney(priceNow)} = {formatMoney(result.profit)} ₽</p>
             </div>
           </div>
           <div className="min-w-0">
             <button type="button" className="scenario-why" aria-expanded={expanded} aria-controls="scenario-math scenario-explanation" onClick={() => setExpanded(!expanded)}>Почему так?</button>
             <p id="scenario-explanation" className={expanded ? 'scenario-explanation' : 'hidden'}>
-              {priceNow === null ? <Link to="/valuation" className="text-forest underline">Вернитесь к оценке авто и укажите корректную цену продажи.</Link> : <>Если продать сейчас, вы получите {formatMoney(priceNow)} ₽. Если вложить {formatMoney(repairCost)} ₽ в ремонт, вы продадите машину за {formatMoney(priceAfterRepair)} ₽</>}
+              Если продать сейчас, вы получите {formatMoney(priceNow)} ₽. Если вложить {formatMoney(repairCost)} ₽ в ремонт, ориентировочная цена продажи составит {formatMoney(priceAfterRepair)} ₽.
             </p>
           </div>
         </section>
 
         <div className="scenario-actions">
-          <button type="button" disabled={priceNow === null} onClick={() => setNotice('Сохранение расчётов пока недоступно.')} className="scenario-save"><Bookmark size={20} strokeWidth={1} aria-hidden="true" />Сохранить расчёт</button>
+          <button type="button" disabled={pending} onClick={() => { void saveCalculation() }} className="scenario-save"><Bookmark size={20} strokeWidth={1} aria-hidden="true" />{pending ? 'Сохраняем…' : 'Сохранить расчёт'}</button>
           <Link to="/home" onClick={onStartNew} className="scenario-new">Начать новый расчёт</Link>
         </div>
-        {notice && <p role="status" className="text-sm leading-5 text-muted">{notice}</p>}
+        {error && <p role="alert" className="text-sm leading-5 text-error">{error}</p>}
       </div>
-      <p className="mt-6 text-xs leading-5 text-muted">Пример из макета. Реальный расчёт и рекомендация пока не подключены.</p>
     </>
   )
 }

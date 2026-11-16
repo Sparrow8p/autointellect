@@ -4,8 +4,9 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { sections } from '../routes'
 import { BackButton } from './BackButton'
 import { Brand } from './Brand'
+import type { ApiUser } from '../lib/api'
 
-export function Layout() {
+export function Layout({ user, onLogout }: { user: ApiUser | null; onLogout: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const { pathname } = useLocation()
   const aboutDialog = useRef<HTMLDialogElement>(null)
@@ -33,8 +34,8 @@ export function Layout() {
                 aria-controls="account-navigation"
                 onClick={() => setMenuOpen(!menuOpen)}
               >
-                <span className="account-avatar" aria-hidden="true">АК</span>
-                <span className="hidden sm:inline">Александр</span>
+                <span className="account-avatar" aria-hidden="true">{user?.email.slice(0, 2).toUpperCase() || 'А'}</span>
+                <span className="hidden max-w-40 truncate sm:inline">{user?.email || 'Аккаунт'}</span>
                 <ChevronDown size={16} strokeWidth={1} className="hidden text-forest sm:block" aria-hidden="true" />
               </button>
 
@@ -46,8 +47,8 @@ export function Layout() {
                     </NavLink>
                   ))}
                   <button type="button" onClick={() => { setMenuOpen(false); aboutDialog.current?.showModal() }} className="nav-link w-full">О сервисе</button>
-                  <Link to="/" onClick={() => setMenuOpen(false)} className="nav-link mt-2 border-t border-line">
-                    <LogIn size={18} aria-hidden="true" />На экран входа
+                  <Link to="/" onClick={() => { setMenuOpen(false); onLogout() }} className="nav-link mt-2 border-t border-line">
+                    <LogIn size={18} aria-hidden="true" />Выйти
                   </Link>
                 </nav>
               )}
