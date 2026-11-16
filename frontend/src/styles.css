@@ -158,6 +158,30 @@
   .valuation-summary { @apply grid min-w-0 gap-5 rounded-xl bg-white p-7; box-shadow: inset 0 0 0 1px var(--color-line); }
   .valuation-price { @apply text-[44px] leading-[53px] font-semibold; }
   .valuation-growth { @apply text-[15px] leading-[18px] font-semibold text-forest; }
+  .scenarios-content { @apply mt-6 grid gap-3.5; }
+  .scenarios-context { @apply flex min-h-10 flex-wrap items-center gap-2.5; }
+  .scenarios-context > svg { @apply shrink-0 text-forest; }
+  .scenarios-context > p { @apply min-w-0 text-sm leading-[17px] wrap-anywhere text-muted; }
+  .scenario-cards { @apply grid grid-cols-3 items-stretch gap-10; }
+  .scenario-card { @apply flex min-h-56 min-w-0 flex-col gap-3 rounded-xl bg-white p-[22px]; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .scenario-card-recommended { box-shadow: inset 0 0 0 3px var(--color-forest); }
+  .scenario-status { @apply flex h-6 shrink-0 items-center justify-between gap-2; }
+  .scenario-status > svg { @apply shrink-0 text-muted; }
+  .scenario-badge { @apply inline-flex items-center gap-[5px] rounded-full bg-sage px-[9px] py-1 text-xs leading-[15px] font-semibold text-forest; }
+  .scenario-card h2 { @apply text-[19px] leading-[23px] font-semibold; }
+  .scenario-amount { @apply text-[40px] leading-[48px] font-semibold wrap-anywhere; }
+  .scenario-card-recommended .scenario-amount, .scenario-card-recommended .scenario-status > svg { @apply text-forest; }
+  .scenario-description { @apply text-sm leading-[1.45] text-muted; }
+  .scenario-reason { @apply grid items-start gap-7 rounded-xl bg-sage px-6 py-4; grid-template-columns: 450px minmax(0, 1fr); }
+  .scenario-conclusion { @apply grid min-w-0 gap-1.5 text-forest; }
+  .scenario-conclusion > h2 { @apply text-[23px] leading-7 font-semibold wrap-anywhere; }
+  .scenario-math { @apply grid gap-1.5 text-[13px] leading-4 wrap-anywhere; }
+  .scenario-why { @apply block rounded text-sm leading-[17px] font-semibold hover:underline; }
+  .scenario-explanation { @apply mt-1.5 text-sm leading-[1.45] wrap-anywhere text-muted; }
+  .scenario-actions { @apply flex flex-wrap gap-4; }
+  .scenario-save, .scenario-new { @apply inline-flex min-h-14 w-[280px] max-w-full items-center justify-center gap-2.5 rounded-lg border px-6 py-3 text-center text-[15px] leading-[18px] font-semibold transition-colors; }
+  .scenario-save { @apply border-forest bg-forest text-white hover:bg-forest-hover disabled:cursor-not-allowed disabled:opacity-50; }
+  .scenario-new { @apply border-line bg-white hover:border-forest/40 hover:bg-sage; }
   .about-dialog { @apply m-auto w-[calc(100%-32px)] max-w-lg rounded-2xl border border-line bg-white p-7 text-ink shadow-xl; }
   .about-dialog::backdrop { background: rgb(25 39 29 / 30%); }
 }
@@ -179,6 +203,10 @@
   .car-help { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
   .repair-content { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .valuation-content { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .scenario-cards { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .scenario-reason { grid-template-columns: minmax(0, 1fr); }
+  .scenarios-context { display: grid; grid-template-columns: 20px minmax(0, 1fr); }
+  .scenarios-context > span { grid-column: 2; }
 }
 
 @media (max-width: 639px) {
@@ -225,6 +253,8 @@
   .valuation-question { font-size: 20px; }
   .valuation-price { font-size: 36px; line-height: 44px; }
   .valuation-continue { width: 100%; }
+  .scenario-amount { font-size: 36px; line-height: 44px; }
+  .scenario-save, .scenario-new { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

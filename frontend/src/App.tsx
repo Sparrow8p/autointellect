@@ -6,6 +6,7 @@ import { Home } from './pages/Home'
 import { CarProfile } from './pages/CarProfile'
 import { RepairEstimate } from './pages/RepairEstimate'
 import { CarValuation } from './pages/CarValuation'
+import { Scenarios } from './pages/Scenarios'
 import { Login } from './pages/Login'
 import { NotFound, Placeholder } from './pages/Placeholder'
 import { placeholderSections } from './routes'
@@ -26,6 +27,7 @@ export function App() {
           <Route path="/car" element={<CarProfile draft={carDraft} onDraftChange={setCarDraft} />} />
           <Route path="/repair" element={<RepairEstimate car={carDraft} problem={problem} />} />
           <Route path="/valuation" element={<CarValuation car={carDraft} problem={problem} priceAsIs={priceAsIs} onPriceChange={setPriceAsIs} />} />
+          <Route path="/scenarios" element={<Scenarios car={carDraft} priceAsIs={priceAsIs} onStartNew={() => { setProblem(''); setPriceAsIs('') }} />} />
           {placeholderSections.map((section) => (
             <Route key={section.path} path={section.path} element={<Placeholder title={section.title} icon={section.icon} />} />
           ))}
