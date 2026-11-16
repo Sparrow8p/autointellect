@@ -5,6 +5,7 @@ import { RouteEffects } from './components/RouteEffects'
 import { Home } from './pages/Home'
 import { CarProfile } from './pages/CarProfile'
 import { RepairEstimate } from './pages/RepairEstimate'
+import { CarValuation } from './pages/CarValuation'
 import { Login } from './pages/Login'
 import { NotFound, Placeholder } from './pages/Placeholder'
 import { placeholderSections } from './routes'
@@ -13,6 +14,7 @@ import { loadSavedCarProfile } from './lib/carProfileStorage'
 export function App() {
   const [problem, setProblem] = useState('')
   const [carDraft, setCarDraft] = useState(loadSavedCarProfile)
+  const [priceAsIs, setPriceAsIs] = useState('580 000')
 
   return (
     <>
@@ -23,6 +25,7 @@ export function App() {
           <Route path="/home" element={<Home problem={problem} onProblemChange={setProblem} />} />
           <Route path="/car" element={<CarProfile draft={carDraft} onDraftChange={setCarDraft} />} />
           <Route path="/repair" element={<RepairEstimate car={carDraft} problem={problem} />} />
+          <Route path="/valuation" element={<CarValuation car={carDraft} problem={problem} priceAsIs={priceAsIs} onPriceChange={setPriceAsIs} />} />
           {placeholderSections.map((section) => (
             <Route key={section.path} path={section.path} element={<Placeholder title={section.title} icon={section.icon} />} />
           ))}

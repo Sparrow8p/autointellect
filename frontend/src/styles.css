@@ -144,6 +144,20 @@
   .repair-action-primary { @apply border-forest bg-forest text-white hover:bg-forest-hover; }
   .repair-action-secondary { @apply border-line bg-white hover:border-forest/40 hover:bg-sage; }
   .repair-action-secondary svg { @apply shrink-0 text-forest; }
+  .valuation-context { @apply mt-6 flex min-h-[54px] items-center gap-3 rounded-lg bg-sage px-5 py-4 text-[15px] leading-[18px] text-forest; }
+  .valuation-context > svg { @apply shrink-0; }
+  .valuation-context > p { @apply min-w-0 wrap-anywhere; }
+  .valuation-content { @apply mt-6 grid items-start gap-10; grid-template-columns: minmax(0, 840px) 400px; }
+  .valuation-form { @apply grid min-w-0 gap-6; }
+  .valuation-form-card { @apply grid gap-5 rounded-xl bg-white p-8; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .valuation-question { @apply text-[22px] leading-[1.3] font-semibold; }
+  .valuation-input { @apply block h-14 w-full min-w-0 rounded-lg border-2 border-forest bg-white py-3 pr-11 pl-4 text-base leading-[19px] text-ink focus:outline-none focus:ring-2 focus:ring-forest/10; }
+  .valuation-input[aria-invalid="true"] { @apply border-error focus:ring-error/15; }
+  .valuation-currency { @apply pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-lg leading-[22px] text-muted; }
+  .valuation-continue { @apply inline-flex min-h-14 w-[340px] max-w-full items-center justify-center gap-2.5 rounded-lg border border-forest bg-forest px-6 py-3 text-[15px] leading-[18px] font-semibold text-white transition-colors hover:bg-forest-hover disabled:cursor-not-allowed disabled:opacity-50; }
+  .valuation-summary { @apply grid min-w-0 gap-5 rounded-xl bg-white p-7; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .valuation-price { @apply text-[44px] leading-[53px] font-semibold; }
+  .valuation-growth { @apply text-[15px] leading-[18px] font-semibold text-forest; }
   .about-dialog { @apply m-auto w-[calc(100%-32px)] max-w-lg rounded-2xl border border-line bg-white p-7 text-ink shadow-xl; }
   .about-dialog::backdrop { background: rgb(25 39 29 / 30%); }
 }
@@ -164,6 +178,7 @@
   .car-content { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .car-help { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
   .repair-content { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .valuation-content { grid-template-columns: minmax(0, 1fr); gap: 24px; }
 }
 
 @media (max-width: 639px) {
@@ -205,6 +220,11 @@
   .car-save-label { align-items: flex-start; line-height: 20px; }
   .repair-price { font-size: 30px; line-height: 1.2; }
   .repair-summary { padding: 24px; }
+  .valuation-context { padding-inline: 16px; }
+  .valuation-form-card, .valuation-summary { padding: 24px; }
+  .valuation-question { font-size: 20px; }
+  .valuation-price { font-size: 36px; line-height: 44px; }
+  .valuation-continue { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

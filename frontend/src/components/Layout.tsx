@@ -17,7 +17,7 @@ export function Layout() {
         <div className="app-shell app-topbar">
           <Brand />
           <nav aria-label="Основная навигация" className="app-navigation">
-            <NavLink to="/home" className={({ isActive }) => isActive || pathname === '/car' || pathname === '/repair' ? 'app-tab app-tab-active' : 'app-tab'}>Главная</NavLink>
+            <NavLink to="/home" className={({ isActive }) => isActive || ['/car', '/repair', '/valuation'].includes(pathname) ? 'app-tab app-tab-active' : 'app-tab'}>Главная</NavLink>
             <NavLink to="/history" className={({ isActive }) => isActive ? 'app-tab app-tab-active' : 'app-tab'}>История расчётов</NavLink>
             <button type="button" onClick={() => aboutDialog.current?.showModal()} className="app-tab">О сервисе</button>
           </nav>
