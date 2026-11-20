@@ -11,7 +11,7 @@ const steps = [
 
 export function Home({ problem, onProblemChange }: { problem: string; onProblemChange: (value: string) => void }) {
   const navigate = useNavigate()
-  const canContinue = Boolean(problem.trim())
+  const canContinue = problem.trim().length >= 2
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

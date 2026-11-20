@@ -1,12 +1,14 @@
 import { useRef, useState } from 'react'
 import { ChevronDown, LogIn, X } from 'lucide-react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { sections } from '../routes'
 import { BackButton } from './BackButton'
 import { Brand } from './Brand'
+import type { ApiUser } from '../lib/api'
 
-export function Layout() {
+export function Layout({ user, onLogout }: { user: ApiUser | null; onLogout: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { pathname } = useLocation()
   const aboutDialog = useRef<HTMLDialogElement>(null)
 
   return (
@@ -16,13 +18,13 @@ export function Layout() {
         <div className="app-shell app-topbar">
           <Brand />
           <nav aria-label="Основная навигация" className="app-navigation">
-            <NavLink to="/home" className={({ isActive }) => isActive ? 'app-tab app-tab-active' : 'app-tab'}>Главная</NavLink>
+            <NavLink to="/home" className={({ isActive }) => isActive || ['/car', '/repair', '/valuation', '/scenarios'].includes(pathname) ? 'app-tab app-tab-active' : 'app-tab'}>Главная</NavLink>
             <NavLink to="/history" className={({ isActive }) => isActive ? 'app-tab app-tab-active' : 'app-tab'}>История расчётов</NavLink>
             <button type="button" onClick={() => aboutDialog.current?.showModal()} className="app-tab">О сервисе</button>
           </nav>
 
           <div className="app-header-actions">
-            <BackButton />
+            {pathname !== '/car' && <BackButton />}
             <div className="relative" onKeyDown={(event) => { if (event.key === 'Escape') setMenuOpen(false) }}>
               <button
                 type="button"
@@ -32,8 +34,8 @@ export function Layout() {
                 aria-controls="account-navigation"
                 onClick={() => setMenuOpen(!menuOpen)}
               >
-                <span className="account-avatar" aria-hidden="true">АК</span>
-                <span className="hidden sm:inline">Александр</span>
+                <span className="account-avatar" aria-hidden="true">{user?.email.slice(0, 2).toUpperCase() || 'А'}</span>
+                <span className="hidden max-w-40 truncate sm:inline">{user?.email || 'Аккаунт'}</span>
                 <ChevronDown size={16} strokeWidth={1} className="hidden text-forest sm:block" aria-hidden="true" />
               </button>
 
@@ -45,8 +47,8 @@ export function Layout() {
                     </NavLink>
                   ))}
                   <button type="button" onClick={() => { setMenuOpen(false); aboutDialog.current?.showModal() }} className="nav-link w-full">О сервисе</button>
-                  <Link to="/" onClick={() => setMenuOpen(false)} className="nav-link mt-2 border-t border-line">
-                    <LogIn size={18} aria-hidden="true" />На экран входа
+                  <Link to="/" onClick={() => { setMenuOpen(false); onLogout() }} className="nav-link mt-2 border-t border-line">
+                    <LogIn size={18} aria-hidden="true" />Выйти
                   </Link>
                 </nav>
               )}

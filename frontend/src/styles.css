@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Тема и размеры главной — из CSS Figma; композиция входа — из PNG. */
 @theme {
   --font-sans: "Inter", Arial, sans-serif;
   --color-canvas: #f6f7f6;
@@ -94,6 +93,128 @@
   .home-add-car { @apply mt-5 flex min-h-[104px] items-center justify-center gap-2.5 rounded-lg border border-dashed border-line px-4 py-5 text-[15px] leading-[18px] font-medium text-forest transition-colors hover:border-forest/40 hover:bg-sage/50; }
   .home-how { @apply mt-6 px-1; }
   .home-step-number { @apply grid size-8 shrink-0 place-items-center rounded-full bg-sage text-[13px] leading-4 font-semibold text-forest; }
+  .car-content { @apply mt-6 grid items-start gap-10; grid-template-columns: minmax(0, 840px) 400px; }
+  .car-form { @apply grid min-w-0 gap-6; }
+  .car-progress { @apply h-1 overflow-hidden bg-line; }
+  .car-progress span { @apply block h-full w-1/2 rounded bg-forest; }
+  .car-form-card { @apply grid gap-5 rounded-xl bg-white p-7; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .car-field-row { @apply grid grid-cols-2 items-start gap-6; }
+  .car-field { @apply grid min-w-0 gap-2; }
+  .car-field > label:not(.sr-only) { @apply text-sm leading-[17px] font-medium; }
+  .car-select-wrap { @apply relative min-w-0; }
+  .car-select-wrap > svg { @apply pointer-events-none absolute top-[19px] right-4 text-forest; }
+  .car-control { @apply block h-14 w-full min-w-0 rounded-lg border border-line bg-white px-4 text-base leading-[19px] text-ink transition-colors placeholder:text-muted hover:border-forest/40 focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/10 disabled:cursor-not-allowed disabled:bg-canvas disabled:text-muted; }
+  select.car-control { @apply appearance-none pr-[46px]; }
+  .car-control[aria-invalid="true"] { @apply border-error; }
+  .car-control[aria-invalid="true"]:focus { @apply ring-error/15; }
+  .car-field-error { @apply text-xs leading-4 text-error; }
+  .car-save-label { @apply flex min-h-5 cursor-pointer items-center gap-3 text-sm leading-[17px]; }
+  .car-checkbox { @apply size-5 shrink-0 cursor-pointer appearance-none rounded border border-line bg-white checked:border-forest checked:bg-forest; }
+  .car-actions { @apply flex items-start justify-between gap-4; }
+  .car-back { @apply inline-flex min-h-14 w-[140px] items-center justify-center rounded-lg border border-line bg-white px-6 py-3 text-[15px] leading-[18px] font-semibold transition-colors hover:border-forest/40 hover:bg-sage; }
+  .car-continue { @apply inline-flex min-h-14 w-[320px] max-w-full items-center justify-center rounded-lg border border-forest bg-forest px-6 py-3 text-[15px] leading-[18px] font-semibold text-white transition-colors hover:bg-forest-hover; }
+  .car-submit-error { @apply text-sm leading-5 text-error; }
+  .car-prototype-note { @apply text-xs leading-5 text-muted; }
+  .car-help { @apply grid gap-5; }
+  .car-help-card { @apply grid gap-5 rounded-xl bg-white p-7; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .car-help-card > h2 { @apply text-xl leading-6 font-semibold; }
+  .car-explanation { @apply flex items-start gap-3; }
+  .car-explanation > svg { @apply shrink-0 text-forest; }
+  .car-explanation h3 { @apply text-sm leading-[17px] font-semibold; }
+  .car-explanation p { @apply mt-1 text-[13px] leading-[1.45] text-muted; }
+  .car-mileage-tip { @apply rounded-xl bg-sage p-[22px] text-sm leading-[1.45] text-forest; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .repair-content { @apply mt-6 grid items-start gap-10; grid-template-columns: minmax(0, 840px) 400px; }
+  .repair-estimate { @apply grid min-w-0 gap-4; }
+  .repair-range { @apply grid gap-2; }
+  .repair-price { @apply text-[42px] leading-[51px] font-semibold; }
+  .repair-context { @apply text-[15px] leading-[18px] wrap-anywhere text-muted; }
+  .repair-confidence { @apply flex items-center gap-3.5 rounded-lg bg-sage p-4; }
+  .repair-confidence > svg { @apply shrink-0 text-forest; }
+  .repair-details { @apply min-w-0 rounded-xl bg-white; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .repair-details > summary { @apply flex min-h-[65px] cursor-pointer list-none items-start justify-between gap-4 rounded-xl p-[22px]; }
+  .repair-details > summary::-webkit-details-marker { display: none; }
+  .repair-details h2 { @apply text-[17px] leading-[21px] font-semibold; }
+  .repair-details summary > svg { @apply shrink-0 text-forest; }
+  .repair-details[open] summary > svg { transform: rotate(180deg); }
+  .repair-details-body { @apply px-[22px] pb-[22px] text-sm leading-6 text-muted; }
+  .repair-summary { @apply grid min-w-0 gap-5 rounded-xl bg-white p-7; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .repair-car { @apply flex min-w-0 items-center gap-4; }
+  .repair-car-icon { @apply grid size-[52px] shrink-0 place-items-center rounded-[10px] bg-sage text-forest; }
+  .repair-action { @apply inline-flex min-h-14 items-center justify-center gap-2.5 rounded-lg border px-6 py-3 text-center text-[15px] leading-[18px] font-semibold transition-colors; }
+  .repair-action-primary { @apply border-forest bg-forest text-white hover:bg-forest-hover; }
+  .repair-action-secondary { @apply border-line bg-white hover:border-forest/40 hover:bg-sage; }
+  .repair-action-secondary svg { @apply shrink-0 text-forest; }
+  .valuation-context { @apply mt-6 flex min-h-[54px] items-center gap-3 rounded-lg bg-sage px-5 py-4 text-[15px] leading-[18px] text-forest; }
+  .valuation-context > svg { @apply shrink-0; }
+  .valuation-context > p { @apply min-w-0 wrap-anywhere; }
+  .valuation-content { @apply mt-6 grid items-start gap-10; grid-template-columns: minmax(0, 840px) 400px; }
+  .valuation-form { @apply grid min-w-0 gap-6; }
+  .valuation-form-card { @apply grid gap-5 rounded-xl bg-white p-8; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .valuation-question { @apply text-[22px] leading-[1.3] font-semibold; }
+  .valuation-input { @apply block h-14 w-full min-w-0 rounded-lg border-2 border-forest bg-white py-3 pr-11 pl-4 text-base leading-[19px] text-ink focus:outline-none focus:ring-2 focus:ring-forest/10; }
+  .valuation-input[aria-invalid="true"] { @apply border-error focus:ring-error/15; }
+  .valuation-currency { @apply pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-lg leading-[22px] text-muted; }
+  .valuation-continue { @apply inline-flex min-h-14 w-[340px] max-w-full items-center justify-center gap-2.5 rounded-lg border border-forest bg-forest px-6 py-3 text-[15px] leading-[18px] font-semibold text-white transition-colors hover:bg-forest-hover disabled:cursor-not-allowed disabled:opacity-50; }
+  .valuation-summary { @apply grid min-w-0 gap-5 rounded-xl bg-white p-7; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .valuation-price { @apply text-[44px] leading-[53px] font-semibold; }
+  .valuation-growth { @apply text-[15px] leading-[18px] font-semibold text-forest; }
+  .scenarios-content { @apply mt-6 grid gap-3.5; }
+  .scenarios-context { @apply flex min-h-10 flex-wrap items-center gap-2.5; }
+  .scenarios-context > svg { @apply shrink-0 text-forest; }
+  .scenarios-context > p { @apply min-w-0 text-sm leading-[17px] wrap-anywhere text-muted; }
+  .scenario-cards { @apply grid grid-cols-3 items-stretch gap-10; }
+  .scenario-card { @apply flex min-h-56 min-w-0 flex-col gap-3 rounded-xl bg-white p-[22px]; box-shadow: inset 0 0 0 1px var(--color-line); }
+  .scenario-card-recommended { box-shadow: inset 0 0 0 3px var(--color-forest); }
+  .scenario-status { @apply flex h-6 shrink-0 items-center justify-between gap-2; }
+  .scenario-status > svg { @apply shrink-0 text-muted; }
+  .scenario-badge { @apply inline-flex items-center gap-[5px] rounded-full bg-sage px-[9px] py-1 text-xs leading-[15px] font-semibold text-forest; }
+  .scenario-card h2 { @apply text-[19px] leading-[23px] font-semibold; }
+  .scenario-amount { @apply text-[40px] leading-[48px] font-semibold wrap-anywhere; }
+  .scenario-card-recommended .scenario-amount, .scenario-card-recommended .scenario-status > svg { @apply text-forest; }
+  .scenario-description { @apply text-sm leading-[1.45] text-muted; }
+  .scenario-reason { @apply grid items-start gap-7 rounded-xl bg-sage px-6 py-4; grid-template-columns: 450px minmax(0, 1fr); }
+  .scenario-conclusion { @apply grid min-w-0 gap-1.5 text-forest; }
+  .scenario-conclusion > h2 { @apply text-[23px] leading-7 font-semibold wrap-anywhere; }
+  .scenario-math { @apply grid gap-1.5 text-[13px] leading-4 wrap-anywhere; }
+  .scenario-why { @apply block rounded text-sm leading-[17px] font-semibold hover:underline; }
+  .scenario-explanation { @apply mt-1.5 text-sm leading-[1.45] wrap-anywhere text-muted; }
+  .scenario-actions { @apply flex flex-wrap gap-4; }
+  .scenario-save, .scenario-new { @apply inline-flex min-h-14 w-[280px] max-w-full items-center justify-center gap-2.5 rounded-lg border px-6 py-3 text-center text-[15px] leading-[18px] font-semibold transition-colors; }
+  .scenario-save { @apply border-forest bg-forest text-white hover:bg-forest-hover disabled:cursor-not-allowed disabled:opacity-50; }
+  .scenario-new { @apply border-line bg-white hover:border-forest/40 hover:bg-sage; }
+  .history-content { @apply mt-6 grid gap-6; }
+  .history-toolbar { @apply flex min-h-14 items-center justify-between gap-5; }
+  .history-tools { @apply flex items-start gap-4; }
+  .history-search { @apply relative w-[390px] min-w-0; }
+  .history-search > svg { @apply pointer-events-none absolute top-[18px] left-4 text-muted; }
+  .history-search input { @apply block h-14 w-full rounded-lg border border-line bg-white pr-4 pl-12 text-sm leading-[17px] placeholder:text-muted focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/10; }
+  .history-new { @apply inline-flex min-h-14 w-[210px] shrink-0 items-center justify-center gap-2.5 rounded-lg border border-forest bg-forest px-6 py-3 text-[15px] leading-[18px] font-semibold text-white transition-colors hover:bg-forest-hover; }
+  .history-table-wrap { @apply overflow-hidden rounded-xl bg-white; outline: 1px solid var(--color-line); outline-offset: -1px; }
+  .history-table { @apply w-full table-fixed border-collapse text-left; }
+  .history-col-date { width: 13.515625%; }
+  .history-col-car { width: 27.96875%; }
+  .history-col-result { width: 40.078125%; }
+  .history-col-actions { width: 18.4375%; }
+  .history-table th, .history-table td { @apply py-0 pr-1 pl-6 align-middle wrap-anywhere; }
+  .history-table th:last-child, .history-table td:last-child { @apply pr-6; }
+  .history-table th { @apply h-12 bg-[#f0f3f0] text-xs leading-[15px] font-semibold text-muted; }
+  .history-row { @apply h-[105px] border-t border-line bg-white; }
+  .history-row:nth-child(2), .history-row:hover { background: #f6f8f5; }
+  .history-long-date, .history-compact-date { @apply text-sm leading-[17px]; }
+  .history-compact-date { display: none; }
+  .history-time { @apply mt-1.5 text-[13px] leading-4 text-muted; }
+  .history-car { @apply text-base leading-[19px] font-semibold; }
+  .history-problem { @apply mt-1.5 text-sm leading-[17px] text-muted; }
+  .history-result { @apply text-sm leading-[17px] font-medium; }
+  .history-result-detail { @apply mt-1 text-sm leading-[17px] font-medium text-muted; }
+  .history-recommendation { @apply mt-1 text-xs leading-[15px]; }
+  .history-row-actions { @apply flex items-center justify-between gap-2; }
+  .history-open { @apply min-h-9 rounded text-sm leading-[17px] font-semibold text-forest hover:underline; }
+  .history-delete { @apply grid size-9 shrink-0 place-items-center rounded-lg text-muted transition-colors hover:bg-sage hover:text-error; }
+  .history-table td.history-empty { @apply p-8 text-center text-sm leading-6 text-muted; }
+  .history-dialog { @apply m-auto w-[calc(100%-32px)] max-w-lg rounded-xl border border-line bg-white p-7 text-ink shadow-xl; }
+  .history-dialog::backdrop { background: rgb(25 39 29 / 30%); }
+  .history-dialog-close { @apply grid size-8 shrink-0 place-items-center rounded text-muted hover:bg-sage; }
   .about-dialog { @apply m-auto w-[calc(100%-32px)] max-w-lg rounded-2xl border border-line bg-white p-7 text-ink shadow-xl; }
   .about-dialog::backdrop { background: rgb(25 39 29 / 30%); }
 }
@@ -111,6 +232,48 @@
   .home-content { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .home-aside { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .home-how { margin-top: 0; }
+  .car-content { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .car-help { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .repair-content { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .valuation-content { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .scenario-cards { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .scenario-reason { grid-template-columns: minmax(0, 1fr); }
+  .scenarios-context { display: grid; grid-template-columns: 20px minmax(0, 1fr); }
+  .scenarios-context > span { grid-column: 2; }
+}
+
+@media (max-width: 639px) {
+  .car-field-row, .car-help { grid-template-columns: minmax(0, 1fr); }
+  .car-field-row { gap: 20px; }
+}
+
+@media (max-width: 1000px) {
+  .history-table th, .history-table td { padding-left: 16px; padding-right: 4px; }
+  .history-table th:last-child, .history-table td:last-child { padding-right: 16px; }
+  .history-col-date { width: 14%; }
+  .history-col-car { width: 29%; }
+  .history-col-result { width: 37%; }
+  .history-col-actions { width: 20%; }
+  .history-long-date { display: none; }
+  .history-compact-date { display: block; }
+}
+
+@media (max-width: 767px) {
+  .history-toolbar { align-items: flex-start; flex-direction: column; gap: 16px; }
+  .history-tools { width: 100%; }
+  .history-search { flex: 1; width: auto; }
+}
+
+@media (max-width: 639px) {
+  .history-tools { flex-direction: column; }
+  .history-search, .history-new { width: 100%; }
+  .history-table-wrap { overflow: visible; background: transparent; outline: none; }
+  .history-table, .history-table tbody { display: block; }
+  .history-table thead, .history-table colgroup { display: none; }
+  .history-row { display: grid; height: auto; gap: 20px; margin-bottom: 12px; padding: 20px; border: 1px solid var(--color-line); border-radius: 12px; }
+  .history-table td, .history-table td:last-child { display: block; padding: 0; }
+  .history-row td::before { display: block; content: attr(data-label); margin-bottom: 6px; font-size: 11px; line-height: 15px; color: var(--color-muted); }
+  .history-table td.history-empty { padding: 24px; border: 1px solid var(--color-line); border-radius: 12px; background: white; }
 }
 
 @media (max-width: 479px) {
@@ -141,6 +304,19 @@
   .home-aside { grid-template-columns: minmax(0, 1fr); }
   .home-car-card { padding: 24px; }
   .home-calculate { width: 100%; }
+  .car-form-card, .car-help-card { padding: 24px; }
+  .car-actions { flex-direction: column-reverse; gap: 12px; }
+  .car-back, .car-continue { width: 100%; }
+  .car-save-label { align-items: flex-start; line-height: 20px; }
+  .repair-price { font-size: 30px; line-height: 1.2; }
+  .repair-summary { padding: 24px; }
+  .valuation-context { padding-inline: 16px; }
+  .valuation-form-card, .valuation-summary { padding: 24px; }
+  .valuation-question { font-size: 20px; }
+  .valuation-price { font-size: 36px; line-height: 44px; }
+  .valuation-continue { width: 100%; }
+  .scenario-amount { font-size: 36px; line-height: 44px; }
+  .scenario-save, .scenario-new { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

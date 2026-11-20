@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { BadgeCheck, ChartNoAxesColumnIncreasing, GitBranch, Mail } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
 import { Brand } from '../components/Brand'
+import { api, errorMessage } from '../lib/api'
 
 function AppleIcon() {
   return (
@@ -13,31 +14,58 @@ function AppleIcon() {
   )
 }
 
-export function Login() {
+export function Login({ onAuthenticated }: { onAuthenticated: (token: string) => void }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const identifierInput = useRef<HTMLInputElement>(null)
+  const request = useRef<AbortController | null>(null)
   const [identifier, setIdentifier] = useState('')
+  const [password, setPassword] = useState('')
+  const [register, setRegister] = useState(false)
+  const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => () => request.current?.abort(), [])
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (request.current) return
     const value = identifier.trim()
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-    const isPhone = /^\+?\d{10,15}$/.test(value.replace(/[\s()-]/g, ''))
 
-    if (!value || (!isEmail && !isPhone)) {
-      setError(value ? 'Введите корректный телефон или email.' : 'Введите телефон или email, чтобы продолжить.')
+    if (!isEmail) {
+      setError('Введите корректный email.')
       identifierInput.current?.focus()
+      return
+    }
+    if (!password || password.length > 128 || (register && password.length < 8)) {
+      setError(register ? 'Пароль должен содержать от 8 до 128 символов.' : 'Введите пароль.')
       return
     }
 
     setError('')
-    void navigate('/home')
+    setPending(true)
+    const controller = new AbortController()
+    request.current = controller
+    try {
+      const body = { email: value, password }
+      if (register) await api('/auth/register', { method: 'POST', body, signal: controller.signal })
+      const result = await api<{ access_token: string }>('/auth/login', { method: 'POST', body, signal: controller.signal })
+      onAuthenticated(result.access_token)
+      const from: unknown = location.state?.from
+      const destination = typeof from === 'string' && ['/home', '/car', '/repair', '/valuation', '/scenarios', '/history'].includes(from) ? from : '/home'
+      void navigate(destination, { replace: true })
+    } catch (error) {
+      if (!controller.signal.aborted) setError(errorMessage(error))
+    } finally {
+      if (request.current === controller) request.current = null
+      if (!controller.signal.aborted) setPending(false)
+    }
   }
 
   function showProviderNotice(provider: string) {
-    setNotice('Вход через ' + provider + ' пока недоступен. Укажите телефон или email.')
+    setNotice('Вход через ' + provider + ' пока недоступен. Используйте email и пароль.')
   }
 
   return (
@@ -76,32 +104,35 @@ export function Login() {
           </section>
 
           <section id="login-form" className="login-card" aria-labelledby="login-title">
-            <h1 id="login-title" tabIndex={-1} className="login-title">Вход в аккаунт</h1>
+            <h1 id="login-title" tabIndex={-1} className="login-title">{register ? 'Создать аккаунт' : 'Вход в аккаунт'}</h1>
             <p className="login-subtitle">Сохраняйте расчёты и возвращайтесь к ним</p>
 
             <form onSubmit={handleSubmit} noValidate className="login-form">
-              <label htmlFor="identifier" className="sr-only">Телефон или Email</label>
+              <label htmlFor="identifier" className="sr-only">Email</label>
               <div className="relative">
                 <Mail size={20} strokeWidth={1.3} className="login-input-icon" aria-hidden="true" />
                 <input
                   ref={identifierInput}
                   id="identifier"
                   name="identifier"
-                  type="text"
+                  type="email"
                   autoComplete="username"
-                  placeholder="Телефон или Email"
+                  placeholder="Email"
                   required
                   maxLength={254}
+                  disabled={pending}
                   value={identifier}
                   onChange={(event) => { setIdentifier(event.target.value); setError('') }}
                   aria-invalid={Boolean(error)}
-                  aria-describedby={error ? 'identifier-error login-note' : 'login-note'}
+                  aria-describedby={error ? 'identifier-error' : undefined}
                   className={error ? 'login-input border-error' : 'login-input'}
                 />
               </div>
+              <label htmlFor="password" className="sr-only">Пароль</label>
+              <input id="password" type="password" placeholder={register ? 'Пароль — минимум 8 символов' : 'Пароль'} autoComplete={register ? 'new-password' : 'current-password'} required maxLength={128} disabled={pending} value={password} onChange={(event) => { setPassword(event.target.value); setError('') }} className="login-input mt-3 pl-4" />
               {error && <p id="identifier-error" role="alert" className="mt-2 text-xs leading-5 text-error">{error}</p>}
-              <button type="submit" className="login-continue">Продолжить</button>
-              <p id="login-note" className="sr-only">Форма прототипа: телефон и email пока не подтверждаются.</p>
+              <button type="submit" disabled={pending} className="login-continue disabled:opacity-50">{pending ? 'Подождите…' : register ? 'Зарегистрироваться' : 'Продолжить'}</button>
+              <button type="button" disabled={pending} onClick={() => { setRegister(!register); setError(''); setNotice('') }} className="mt-4 text-sm text-forest hover:underline">{register ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться'}</button>
             </form>
 
             <div className="login-divider" aria-hidden="true"><span />или<span /></div>
