@@ -117,10 +117,18 @@ pytest -q
 | GET | `/api/reference/models?brand=Hyundai` | Модели марки `[{"id", "name", "brand"}]`; без `brand` — все модели. 404 — неизвестная марка |
 | GET | `/api/reference/regions` | Список регионов `[{"id", "name"}]` — из него выбирается `region` авто |
 | POST | `/api/calculations/estimate` | Диапазон стоимости ремонта: `{"car_id", "problem_text"}` → `min_price`, `max_price` (₽), список работ. Ничего не сохраняет |
+| POST | `/api/calculations/check-estimate` | Сверка сметы СТО с расчётом: `{"car_id", "problem_text", "sto_amount"}` → `verdict` («В диапазоне» / «Завышено» / «Занижено»), `verdict_code` (`in_range` / `overpriced` / `underpriced`), `difference` (₽ за границей диапазона), `min_price`, `max_price`, работы. Границы входят в диапазон. Ничего не сохраняет |
 | POST | `/api/calculations/scenarios` | Цена после ремонта, 3 сценария и рекомендация: `{"car_id", "problem_text", "car_price", "years"?}`. Ничего не сохраняет |
 | POST | `/api/calculations/price-after-repair` | Цена авто после ремонта: `{"car_price", "repair_cost"}` → цена после ремонта, рост в ₽ и %. Формула без базы |
 | GET | `/api/history` | История расчётов пользователя (`limit`, `offset`), новые сверху |
 | POST | `/api/history/save` | Сохранить расчёт: `{"car_id", "problem_text", "car_price"}` → 201. Считается заново на сервере |
+| POST | `/api/service-records` | Запись журнала обслуживания: `{"car_id", "service_date", "mileage"?, "sto_name"?, "note"?, "works": [{"name", "price"}]}` → 201. Сумма (`total`) считается на сервере |
+| GET | `/api/service-records?car_id=1` | Журнал авто, новые сверху (`limit` 1–100, `offset`) |
+| GET | `/api/service-records/{id}` | Одна запись. 404 — нет такой или чужая |
+| DELETE | `/api/service-records/{id}` | Удалить запись вместе с файлом чека → 204 |
+| PUT | `/api/service-records/{id}/receipt` | Загрузить/заменить чек (форма, поле `file`; JPEG, PNG или PDF, до 5 МБ). 413 — большой файл, 415 — другой тип |
+| GET | `/api/service-records/{id}/receipt` | Скачать чек. 404 — чека нет |
+| GET | `/api/service-records/report?car_id=1` | PDF «История обслуживания» для покупателя. 404 — записей нет |
 | GET | `/health` | Проверка живости сервиса |
 
 Правила: пароль 8–128 символов; телефон необязателен, формат `+79991234567`; email приводится
@@ -165,9 +173,6 @@ curl -X POST localhost:8000/api/calculations/estimate -H "Authorization: Bearer 
 региональный коэффициент не умножаются. Итог — сумма по работам, в целых рублях. Если ничего
 не распознано, `recognized` равно `false`, а в расчёте только «Компьютерная диагностика».
 Отрицания («не стучит») и опечатки пока не учитываются.
-
-В Swagger (`/docs`) то же самое проще: выполните `/api/auth/login`, нажмите **Authorize** и вставьте
-`access_token`.
 
 ### Сценарии и рекомендация
 
@@ -241,6 +246,23 @@ curl -X POST localhost:8000/api/calculations/scenarios -H "Authorization: Bearer
   `recommendation`. Сценарий 3 в истории не хранится (для него нет колонок).
 
 При удалении авто его расчёты из истории тоже удаляются (каскад на уровне базы).
+
+### Журнал обслуживания и PDF
+
+Пользователь записывает обращения в СТО: дата, пробег, название СТО и список работ с ценами (строки
+чека). Итоговая сумма записи — это сумма цен работ, её считает сервер. Файл чека (JPEG, PNG или PDF,
+до 5 МБ) загружается отдельным запросом `PUT /api/service-records/{id}/receipt`; тип определяется
+по содержимому файла, а не по имени. Файлы лежат в папке `UPLOAD_DIR` (по умолчанию `backend/uploads`,
+в git не попадает) под случайными именами. Это просто папка на диске: при удалении авто записи в базе
+удаляются каскадом, а файлы чеков остаются на диске.
+
+`GET /api/service-records/report?car_id=1` отдаёт PDF для покупателя: данные авто, записи по порядку
+дат, суммы и пометка «Чек приложен» (сами чеки в PDF не вставляются). Email и другие данные владельца
+в отчёт не попадают. PDF строится библиотекой `reportlab`; шрифт DejaVu лежит в
+`backend/app/assets/fonts/` (в стандартных шрифтах PDF нет кириллицы).
+
+Для загрузки файлов в `requirements.txt` добавлены `reportlab` и `python-multipart`: после обновления
+выполните `pip install -r requirements-dev.txt` в `backend`.
 
 В Swagger (`/docs`) то же самое проще: выполните `/api/auth/login`, нажмите **Authorize** и вставьте
 `access_token`.

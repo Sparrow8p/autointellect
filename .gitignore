@@ -8,6 +8,9 @@ venv/
 .ruff_cache/
 *.egg-info/
 
+# Загруженные пользователями файлы (чеки)
+backend/uploads/
+
 # Секреты (шаблон .env.example коммитится, сам .env — нет)
 .env
 

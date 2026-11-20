@@ -2,7 +2,13 @@ from fastapi import APIRouter
 
 from app.api.deps import CurrentUser, DbSession, get_user_car
 from app.core.config import get_settings
-from app.schemas.estimate import EstimateRequest, EstimateResponse, EstimateWork
+from app.schemas.estimate import (
+    EstimateCheckRequest,
+    EstimateCheckResponse,
+    EstimateRequest,
+    EstimateResponse,
+    EstimateWork,
+)
 from app.schemas.scenarios import (
     PriceAfterRepairRequest,
     PriceAfterRepairResponse,
@@ -16,6 +22,7 @@ from app.schemas.scenarios import (
 )
 from app.services.calculation import calculate
 from app.services.estimate import WorkLine, estimate_repair
+from app.services.estimate_check import check_amount
 from app.services.scenarios import price_after_repair
 
 router = APIRouter(prefix="/calculations", tags=["calculations"])
@@ -53,6 +60,32 @@ def estimate(
         max_price=result.max_price,
         region_coefficient=float(result.region_coefficient),
         matched_keywords=result.keywords,
+        works=_works(result.lines),
+    )
+
+
+@router.post("/check-estimate", response_model=EstimateCheckResponse)
+def check_estimate(
+    payload: EstimateCheckRequest, current_user: CurrentUser, db: DbSession
+) -> EstimateCheckResponse:
+    """Сверка суммы от СТО с расчётным диапазоном: «В диапазоне» / «Завышено» / «Занижено».
+    Ничего не сохраняет."""
+    car = get_user_car(db, current_user, payload.car_id)
+    result = estimate_repair(
+        db,
+        region_name=car.region,
+        problem_text=payload.problem_text,
+        hourly_rate=get_settings().labor_rate_per_hour,
+    )
+    check = check_amount(payload.sto_amount, result.min_price, result.max_price)
+    return EstimateCheckResponse(
+        recognized=result.recognized,
+        min_price=result.min_price,
+        max_price=result.max_price,
+        sto_amount=payload.sto_amount,
+        verdict_code=check.code,
+        verdict=check.text,
+        difference=check.difference,
         works=_works(result.lines),
     )
 
