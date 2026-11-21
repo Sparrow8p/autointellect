@@ -8,3 +8,5 @@ pyjwt>=2.8
 pwdlib[argon2]>=0.2
 reportlab>=4.0
 python-multipart>=0.0.9
+requests>=2.31
+beautifulsoup4>=4.12

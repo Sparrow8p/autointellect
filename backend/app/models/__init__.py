@@ -1,5 +1,6 @@
 from app.models.calculation import Calculation
 from app.models.car import Car
+from app.models.market_price import MarketPrice
 from app.models.reference import Brand, CarModel, Region
 from app.models.service_record import ServiceRecord, ServiceWork
 from app.models.user import User
@@ -10,6 +11,7 @@ __all__ = [
     "Calculation",
     "Car",
     "CarModel",
+    "MarketPrice",
     "Region",
     "ServiceRecord",
     "ServiceWork",
