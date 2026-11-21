@@ -6,6 +6,7 @@ from app.api.routes import (
     cars,
     history,
     market_prices,
+    parts,
     reference,
     service_records,
     users,
@@ -20,3 +21,4 @@ api_router.include_router(calculations.router)
 api_router.include_router(history.router)
 api_router.include_router(service_records.router)
 api_router.include_router(market_prices.router)
+api_router.include_router(parts.router)

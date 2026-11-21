@@ -1,5 +1,6 @@
 # Python / backend
 __pycache__/
+.mypy_cache/
 *.py[cod]
 .venv/
 venv/
@@ -27,3 +28,4 @@ build/
 # Диагностика парсера Дрома
 backend/drom_debug.html
 backend/drom_debug_card.html
+backend/shop_debug.html
